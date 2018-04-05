@@ -23,7 +23,6 @@ plugins:
     timeout: 60s
     elasticsearch:
       endpoint: http://localhost:9200
-      index_prefix: gopa-
       username: elastic
       password: changeme
   - name: backup
@@ -31,7 +30,6 @@ plugins:
     timeout: 60s
     elasticsearch:
      endpoint: http://localhost:9201
-     index_prefix: gopa-
      username: elastic
      password: changeme
 

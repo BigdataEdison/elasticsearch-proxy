@@ -36,8 +36,7 @@ build: config
 	$(GOBUILD) -o bin/proxy
 	@$(MAKE) restore-generated-file
 
-cross-build: clean config update-ui
-	$(GO) test
+cross-build: clean config
 	GOOS=windows GOARCH=amd64 $(GOBUILD) -o bin/proxy-windows64.exe
 	GOOS=darwin  GOARCH=amd64 $(GOBUILD) -o bin/proxy-darwin64
 	GOOS=linux  GOARCH=amd64 $(GOBUILD) -o bin/proxy-linux64
