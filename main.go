@@ -30,7 +30,6 @@ import (
 	"github.com/infinitbyte/framework/modules/ui"
 	"github.com/medcl/elasticsearch-proxy/config"
 	"github.com/medcl/elasticsearch-proxy/plugin"
-	"strings"
 )
 
 func main() {
