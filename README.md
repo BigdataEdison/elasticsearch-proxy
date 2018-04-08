@@ -23,19 +23,15 @@ PROXY, a simple elasticsearch proxy written in golang.
 plugins:
 - name: proxy
   enabled: true
-  algorithm: duplicate
-  disk_queue: true
   upstream:
   - name: primary
     enabled: true
-    timeout: 60s
     elasticsearch:
       endpoint: http://localhost:9200
       username: elastic
       password: changeme
   - name: backup
     enabled: false
-    timeout: 60s
     elasticsearch:
      endpoint: http://localhost:9201
      username: elastic
@@ -60,11 +56,23 @@ ___  ____ ____ _  _ _   _
 - Done! Now you are ready to rock with it.
 
 ```
-➜  elasticsearch-proxy ✗ curl -XGET http://localhost:2900/
+➜curl  -XGET http://localhost:2900/
+{
+  "name": "PROXY",
+  "tagline": "You Know, for Proxy",
+  "upstream": "auto",
+  "uptime": "1m58.019165s",
+  "version": {
+    "build_commit": "430bd60, Sun Apr 8 09:44:38 2018 +0800, medcl, seems good to go ",
+    "build_date": "Sun Apr  8 09:58:29 CST 2018",
+    "number": "0.1.0_SNAPSHOT"
+  }
+}
+➜curl  -XGET -H'UPSTREAM:primary'  http://localhost:2900/
 {
   "name" : "XZDZ8qc",
-  "cluster_name" : "elasticsearch",
-  "cluster_uuid" : "AIqV7VYGT9G13WgucUVu9g",
+  "cluster_name" : "my-application",
+  "cluster_uuid" : "FWt_UO6BRr6uBVhkVrisew",
   "version" : {
     "number" : "6.2.3",
     "build_hash" : "c59ff00",
@@ -76,6 +84,32 @@ ___  ____ ____ _  _ _   _
   },
   "tagline" : "You Know, for Search"
 }
+➜curl  -XGET -H'UPSTREAM:backup'  http://localhost:2900/
+{
+  "name" : "zRcp1My",
+  "cluster_name" : "elasticsearch",
+  "cluster_uuid" : "FWt_UO6BRr6uBVhkVrisew",
+  "version" : {
+    "number" : "5.6.8",
+    "build_hash" : "688ecce",
+    "build_date" : "2018-02-16T16:46:30.010Z",
+    "build_snapshot" : false,
+    "lucene_version" : "6.6.1"
+  },
+  "tagline" : "You Know, for Search"
+}
+➜curl  -XPOST http://localhost:2900/myindex/doc/1 -d'{"msg":"hello world!"}'
+{ "acknowledge": true }
+➜curl  -XGET http://localhost:2900/myindex/doc/1
+{"_index":"myindex","_type":"doc","_id":"1","_version":1,"found":true,"_source":{"msg":"hello world!"}}
+➜curl  -XPUT http://localhost:2900/myindex/doc/1 -d'{"msg":"i am a proxy!"}'
+{ "acknowledge": true }
+➜curl  -XGET http://localhost:2900/myindex/doc/1
+{"_index":"myindex","_type":"doc","_id":"1","_version":2,"found":true,"_source":{"msg":"i am a proxy!"}}
+➜curl  -XDELETE http://localhost:2900/myindex/doc/1
+{ "acknowledge": true }
+➜curl  -XGET http://localhost:2900/myindex/doc/1
+{"_index":"myindex","_type":"doc","_id":"1","found":false}
 ```
 
 Have fun!
@@ -86,7 +120,7 @@ Have fun!
   1. `UPSTREAM`, manually choose which upstream are going to query against(read/search requests)
 
     ```
-    ➜  ✗ curl -v -XGET -H'UPSTREAM:primary'  http://localhost:2900/index/doc/1
+    ➜curl -v -XGET -H'UPSTREAM:primary'  http://localhost:2900/index/doc/1
     Note: Unnecessary use of -X or --request, GET is already inferred.
     *   Trying 127.0.0.1...
     * TCP_NODELAY set
