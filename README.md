@@ -46,7 +46,7 @@ ___  ____ ____ _  _ _   _
 |__] |__/ |  |  \/   \_/
 |    |  \ |__| _/\_   |
 [PROXY] An elasticsearch proxy written in golang.
-0.1.0_SNAPSHOT,
+0.1.0_SNAPSHOT,  430bd60, Sun Apr 8 09:44:38 2018 +0800, medcl, seems good to go
 
 [04-05 19:30:13] [INF] [instance.go:23] workspace: data/APP/nodes/0
 [04-05 19:30:13] [INF] [api.go:147] api server listen at: http://0.0.0.0:2900
