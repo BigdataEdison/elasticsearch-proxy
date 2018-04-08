@@ -36,10 +36,18 @@ build: config
 	$(GOBUILD) -o bin/proxy
 	@$(MAKE) restore-generated-file
 
+build-linux:
+	GOOS=linux  GOARCH=amd64  $(GOBUILD) -o bin/proxy-linux64
+	GOOS=linux  GOARCH=386    $(GOBUILD) -o bin/proxy-linux32
+
+build-darwin:
+	GOOS=darwin  GOARCH=amd64     $(GOBUILD) -o bin/proxy-darwin64
+	GOOS=darwin  GOARCH=386       $(GOBUILD) -o bin/proxy-darwin32
+
 cross-build: clean config
-	GOOS=windows GOARCH=amd64 $(GOBUILD) -o bin/proxy-windows64.exe
 	GOOS=darwin  GOARCH=amd64 $(GOBUILD) -o bin/proxy-darwin64
 	GOOS=linux  GOARCH=amd64 $(GOBUILD) -o bin/proxy-linux64
+	GOOS=windows GOARCH=amd64 $(GOBUILD) -o bin/proxy-windows64.exe
 	@$(MAKE) restore-generated-file
 
 update-generated-file:
@@ -84,3 +92,13 @@ config: init-version update-ui update-template-ui update-generated-file
 	@# $(GO) env
 	@mkdir -p bin
 	@cp proxy.yml bin/proxy.yml
+
+package-darwin-platform:
+	@echo "Packaging Darwin"
+	cd bin && tar cfz ../bin/darwin64.tar.gz      proxy-darwin64 proxy.yml
+	cd bin && tar cfz ../bin/darwin32.tar.gz      proxy-darwin32 proxy.yml
+
+package-linux-platform:
+	@echo "Packaging Linux"
+	cd bin && tar cfz ../bin/linux64.tar.gz     proxy-linux64 proxy.yml
+	cd bin && tar cfz ../bin/linux32.tar.gz     proxy-linux32 proxy.yml
