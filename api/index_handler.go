@@ -29,6 +29,7 @@ import (
 	"github.com/medcl/elasticsearch-proxy/config"
 	"net/http"
 	"time"
+	"strings"
 )
 
 // IndexAction returns cluster health information
@@ -64,9 +65,9 @@ func (handler *API) IndexAction(w http.ResponseWriter, req *http.Request, _ http
 	data["name"] = global.Env().SystemConfig.NodeConfig.Name
 
 	version := map[string]interface{}{}
-	version["number"] = config.Version
-	version["build_commit"] = config.LastCommitLog
-	version["build_date"] = config.BuildDate
+	version["number"] = util.TrimSpaces(config.Version)
+	version["build_commit"] = util.TrimSpaces(config.LastCommitLog)
+	version["build_date"] = strings.TrimSpace(config.BuildDate)
 
 	data["version"] = version
 	data["tagline"] = "You Know, for Proxy"

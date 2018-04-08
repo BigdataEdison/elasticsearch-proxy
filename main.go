@@ -20,6 +20,7 @@ import (
 	_ "expvar"
 	"github.com/infinitbyte/framework"
 	"github.com/infinitbyte/framework/core/module"
+	"github.com/infinitbyte/framework/core/util"
 	"github.com/infinitbyte/framework/modules/api"
 	"github.com/infinitbyte/framework/modules/persist"
 	"github.com/infinitbyte/framework/modules/pipeline"
@@ -29,6 +30,7 @@ import (
 	"github.com/infinitbyte/framework/modules/ui"
 	"github.com/medcl/elasticsearch-proxy/config"
 	"github.com/medcl/elasticsearch-proxy/plugin"
+	"strings"
 )
 
 func main() {
@@ -43,7 +45,7 @@ func main() {
 	terminalFooter += (" ____/                             ___/        \n")
 
 	app := framework.NewApp("proxy", "An elasticsearch proxy written in golang.",
-		config.Version, config.LastCommitLog, config.BuildDate, terminalHeader, terminalFooter)
+		util.TrimSpaces(config.Version), util.TrimSpaces(config.LastCommitLog), util.TrimSpaces(config.BuildDate), terminalHeader, terminalFooter)
 
 	app.Init(nil)
 	defer app.Shutdown()
