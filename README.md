@@ -13,7 +13,7 @@ PROXY, a simple elasticsearch proxy written in golang.
 - Builtin stats API and management UI(WIP)
 - UI can be integrated with github OAuth
 - Search/Error requests logging and view via builtin UI(WIP)
-- Support basic oauth or generated token for API protection(WIP)
+- Support basic auth or generated token for API access protection(WIP)
 
 # How to use
 
