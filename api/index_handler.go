@@ -34,6 +34,32 @@ import (
 // IndexAction returns cluster health information
 func (handler *API) IndexAction(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
 
+	upstream := handler.GetHeader(req, "UPSTREAM", "auto")
+	if upstream != "auto" {
+		log.Debug("parameter upstream: ", upstream)
+
+		cfg := config.GetUpstreamConfig(upstream)
+		if cfg.Enabled && cfg.Active {
+
+			response, err := handler.executeHttpRequest(cfg.Elasticsearch, req, nil)
+			if err != nil {
+				handler.WriteJSON(w, util.MapStr{
+					"error": err,
+				}, 500)
+				return
+			}
+			w.Header().Add("upstream", cfg.Name)
+			w.WriteHeader(response.StatusCode)
+			w.Write(response.Body)
+			return
+		} else {
+			handler.WriteJSON(w, util.MapStr{
+				"error": "upstram is not exist nor active",
+			}, 500)
+			return
+		}
+	}
+
 	data := map[string]interface{}{}
 	data["name"] = global.Env().SystemConfig.NodeConfig.Name
 
@@ -47,10 +73,10 @@ func (handler *API) IndexAction(w http.ResponseWriter, req *http.Request, _ http
 	data["uptime"] = time.Since(env.GetStartTime()).String()
 
 	ups := config.GetUpstreamConfigs()
-	upstream := util.MapStr{}
+	m := util.MapStr{}
 	for _, v := range ups {
 		if v.Enabled {
-			upstream[v.Name] = v.Elasticsearch.Endpoint
+			m[v.Name] = v.Elasticsearch.Endpoint
 		}
 	}
 	data["upstream"] = upstream
