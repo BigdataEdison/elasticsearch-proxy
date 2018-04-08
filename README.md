@@ -60,7 +60,10 @@ ___  ____ ____ _  _ _   _
 {
   "name": "PROXY",
   "tagline": "You Know, for Proxy",
-  "upstream": "auto",
+  "upstream": {
+    "backup": "http://localhost:9201",
+    "primary": "http://localhost:9200"
+  },
   "uptime": "1m58.019165s",
   "version": {
     "build_commit": "430bd60, Sun Apr 8 09:44:38 2018 +0800, medcl, seems good to go ",

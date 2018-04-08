@@ -79,7 +79,7 @@ func (handler *API) IndexAction(w http.ResponseWriter, req *http.Request, _ http
 			m[v.Name] = v.Elasticsearch.Endpoint
 		}
 	}
-	data["upstream"] = upstream
+	data["upstream"] = m
 
 	handler.WriteJSON(w, &data, http.StatusOK)
 }
