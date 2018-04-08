@@ -14,24 +14,8 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package api
+package pipelines
 
-import (
-	"github.com/infinitbyte/framework/core/api/router"
-	"github.com/infinitbyte/framework/core/queue"
-	"github.com/infinitbyte/framework/core/util"
-	"net/http"
-)
-
-// QueueStatsAction return queue stats information
-func (handler API) QueueStatsAction(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
-
-	data := map[string]int64{}
-	queues := queue.GetQueues()
-	for _, q := range queues {
-		data[q] = queue.Depth(q)
-	}
-	handler.WriteJSON(w, util.MapStr{
-		"depth": data,
-	}, 200)
-}
+//TODO
+// merge multi requests to single bulk request,
+// break while met bulk request

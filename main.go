@@ -21,6 +21,11 @@ import (
 	"github.com/infinitbyte/framework"
 	"github.com/infinitbyte/framework/core/module"
 	"github.com/infinitbyte/framework/modules/api"
+	"github.com/infinitbyte/framework/modules/persist"
+	"github.com/infinitbyte/framework/modules/pipeline"
+	"github.com/infinitbyte/framework/modules/queue"
+	"github.com/infinitbyte/framework/modules/stats"
+	"github.com/infinitbyte/framework/modules/storage"
 	"github.com/infinitbyte/framework/modules/ui"
 	"github.com/medcl/elasticsearch-proxy/config"
 	"github.com/medcl/elasticsearch-proxy/plugin"
@@ -47,6 +52,12 @@ func main() {
 		//modules
 		module.New()
 
+		//load core modules first
+		module.Register(module.Database, persist.DatabaseModule{})
+		module.Register(module.Storage, storage.StorageModule{})
+		module.Register(module.Stats, stats.SimpleStatsModule{})
+		module.Register(module.Queue, queue.DiskQueue{})
+		module.Register(module.System, pipeline.PipelineFrameworkModule{})
 		module.Register(module.API, api.APIModule{})
 		module.Register(module.UI, ui.UIModule{})
 

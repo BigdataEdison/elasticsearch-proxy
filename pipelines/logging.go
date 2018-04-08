@@ -14,24 +14,20 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package api
+package pipelines
 
 import (
-	"github.com/infinitbyte/framework/core/api/router"
-	"github.com/infinitbyte/framework/core/queue"
-	"github.com/infinitbyte/framework/core/util"
-	"net/http"
+	"github.com/infinitbyte/framework/core/pipeline"
 )
 
-// QueueStatsAction return queue stats information
-func (handler API) QueueStatsAction(w http.ResponseWriter, req *http.Request, _ httprouter.Params) {
+type LoggingJoint struct {
+}
 
-	data := map[string]int64{}
-	queues := queue.GetQueues()
-	for _, q := range queues {
-		data[q] = queue.Depth(q)
-	}
-	handler.WriteJSON(w, util.MapStr{
-		"depth": data,
-	}, 200)
+func (joint LoggingJoint) Name() string {
+	return "logging"
+}
+
+func (joint LoggingJoint) Process(c *pipeline.Context) error {
+
+	return nil
 }

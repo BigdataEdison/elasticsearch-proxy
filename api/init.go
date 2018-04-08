@@ -18,22 +18,21 @@ package api
 
 import (
 	"github.com/infinitbyte/framework/core/api"
-	"github.com/medcl/elasticsearch-proxy/config"
 )
 
 // API namespace
 type API struct {
 	api.Handler
-	Config config.ProxyConfig
 }
 
-// InitAPI register apis
-func InitAPI(config config.ProxyConfig) {
+// InitAPI init apis
+func InitAPI() {
 
-	apis := API{Config: config}
+	apis := API{}
 
 	//Index
-	api.HandleAPIMethod(api.GET, "/_proxy/", apis.IndexAction)
+	api.HandleAPIMethod(api.GET, "/", apis.IndexAction)
+	//api.HandleAPIMethod(api.GET, "/favicon.ico", apis.FaviconAction)
 
 	//Stats APIs
 	api.HandleAPIMethod(api.GET, "/_proxy/stats", apis.StatsAction)

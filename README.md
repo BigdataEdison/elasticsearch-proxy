@@ -1,11 +1,19 @@
 
-PROXY, a simple elasticsearch proxy written in Go.
+PROXY, a simple elasticsearch proxy written in golang.
 
 # Features
-- Enable auto handling elasticsearch failure, via disk based indexing queue(WIP)
-- Enable opt-in TLS/HTTPS protect
-- Enable replicate indexing request to multi remote elasticsearch clusters(WIP)
-- Enable load balancing(indexing and search request), algorithm configurable(WIP)
+- Auto handling upstream failure while indexing, aka nonstop indexing
+- Auto merge single indexing operations to bulk operation(WIP)
+- Index throttling or buffering, via disk based indexing queue
+- Auto detect the upstream failure in search
+- Allow opt-in TLS/HTTPS protect
+- Multiple write mechanism, one indexing request map to multi remote elasticsearch clusters
+- Load balancing(indexing and search request), algorithm configurable(WIP)
+- Support run background as daemon mode(only available linux and macOS)
+- Builtin stats API and management UI(WIP)
+- UI can be integrated with github OAuth
+- Search/Error requests logging and view via builtin UI(WIP)
+- Support basic oauth or generated token for API protection(WIP)
 
 # How to use
 
@@ -71,6 +79,33 @@ ___  ____ ____ _  _ _   _
 ```
 
 Have fun!
+
+# Options
+
+- Additional request headers
+  1. `UPSTREAM`, manually choose which upstream are going to query against(read/search requests)
+
+    ```
+    ➜  ✗ curl -v -XGET -H'UPSTREAM:primary'  http://localhost:2900/index/doc/1
+    Note: Unnecessary use of -X or --request, GET is already inferred.
+    *   Trying 127.0.0.1...
+    * TCP_NODELAY set
+    * Connected to localhost (127.0.0.1) port 2900 (#0)
+    > GET /index/doc/1 HTTP/1.1
+    > Host: localhost:2900
+    > User-Agent: curl/7.54.0
+    > Accept: */*
+    > UPSTREAM:primary
+    >
+    < HTTP/1.1 200 OK
+    < Upstream: primary
+    < Date: Sat, 07 Apr 2018 13:00:30 GMT
+    < Content-Length: 86
+    < Content-Type: text/plain; charset=utf-8
+    <
+    * Connection #0 to host localhost left intact
+    {"_index":"index","_type":"doc","_id":"1","_version":5,"found":true,"_source":{"a":6}}%
+    ```
 
 
 License

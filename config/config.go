@@ -16,16 +16,58 @@ limitations under the License.
 
 package config
 
-import "github.com/infinitbyte/framework/core/index"
+import (
+	"github.com/infinitbyte/framework/core/index"
+	"github.com/infinitbyte/framework/core/pipeline"
+)
 
-type Upstream struct {
+type UpstreamConfig struct {
 	Name          string                    `config:"name"`
+	QueueName     string                    `config:"queue_name"`
 	Enabled       bool                      `config:"enabled"`
+	Active        bool                      `config:"active"`
 	Timeout       string                    `config:"timeout"`
 	Elasticsearch index.ElasticsearchConfig `config:"elasticsearch"`
 }
 
+func (v *UpstreamConfig) SafeGetQueueName() string {
+	queueName := v.QueueName
+	if queueName == "" {
+		queueName = v.Name
+	}
+	return queueName
+}
+
 type ProxyConfig struct {
 	UIEnabled bool
-	Upstream  []Upstream `config:"upstream"`
+	Upstream  []UpstreamConfig `config:"upstream"`
+	Algorithm string
+}
+
+const Url pipeline.ParaKey = "url"
+const Method pipeline.ParaKey = "method"
+const Body pipeline.ParaKey = "body"
+const Upstream pipeline.ParaKey = "upstream"
+const Response pipeline.ParaKey = "response"
+const ResponseSize pipeline.ParaKey = "response_size"
+const ResponseStatusCode pipeline.ParaKey = "response_code"
+
+var upstreams map[string]UpstreamConfig = map[string]UpstreamConfig{}
+
+func GetUpstreamConfig(key string) UpstreamConfig {
+	v := upstreams[key]
+	return v
+}
+func GetUpstreamConfigs() map[string]UpstreamConfig {
+	return upstreams
+}
+
+func SetUpstream(ups []UpstreamConfig) {
+	for _, v := range ups {
+		//default Active is true
+		v.Active = true
+
+		//TODO get upstream status from DB, override active field
+		upstreams[v.Name] = v
+	}
 }

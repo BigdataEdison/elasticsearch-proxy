@@ -20,15 +20,70 @@ plugins:
   upstream:
   - name: primary
     enabled: true
+    queue_name: primary
     timeout: 60s
     elasticsearch:
       endpoint: http://localhost:9200
       username: elastic
       password: changeme
   - name: backup
-    enabled: false
+    enabled: true
+    queue_name: backup
     timeout: 60s
     elasticsearch:
      endpoint: http://localhost:9201
      username: elastic
      password: changeme
+
+pipelines:
+- name: "elasticsearch_ingestion"
+  config:
+      start:
+        joint: index
+        enabled: true
+      process: []
+      end:
+        joint: logging
+        enabled: true
+      error:
+        joint: on_error
+        enabled: true
+
+modules:
+- name: pipeline
+  enabled: true
+  runners:
+    - name: primary
+      enabled: true
+      input_queue: primary
+      max_go_routine: 1
+      threshold_in_ms: 0
+      timeout_in_ms: 5000
+      default_config:
+        start:
+          joint: index
+          enabled: true
+        process: []
+        end:
+          joint: logging
+          enabled: true
+        error:
+          joint: on_error
+          enabled: true
+    - name: backup
+      enabled: true
+      input_queue: backup
+      max_go_routine: 1
+      threshold_in_ms: 0
+      timeout_in_ms: 5000
+      default_config:
+        start:
+          joint: index
+          enabled: true
+        process: []
+        end:
+          joint: logging
+          enabled: true
+        error:
+          joint: on_error
+          enabled: true
