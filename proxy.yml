@@ -17,6 +17,11 @@ plugins:
   enabled: true
   algorithm: duplicate
   disk_queue: true
+  basic_auth:
+    enabled: true
+    user:
+      username: "user"
+      password: "password"
   upstream:
   - name: primary
     enabled: true

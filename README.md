@@ -15,7 +15,7 @@ PROXY, a simple elasticsearch proxy written in golang.
 - Builtin stats API and management UI(WIP)
 - UI can be integrated with github OAuth
 - Search/Error requests logging and view via builtin UI(WIP)
-- Support basic auth or generated token for API access protection(WIP)
+- Support basic auth or generated token for API access protection(basic auth is done, generated token is WIP)
 
 # How to use
 
@@ -58,7 +58,7 @@ ___  ____ ____ _  _ _   _
 - Done! Now you are ready to rock with it.
 
 ```
-➜curl  -XGET http://localhost:2900/
+➜ curl  -XGET http://localhost:2900/
 {
   "name": "PROXY",
   "tagline": "You Know, for Proxy",
@@ -73,7 +73,7 @@ ___  ____ ____ _  _ _   _
     "number": "0.1.0_SNAPSHOT"
   }
 }
-➜curl  -XGET -H'UPSTREAM:primary'  http://localhost:2900/
+➜ curl  -XGET -H'UPSTREAM:primary'  http://localhost:2900/
 {
   "name" : "XZDZ8qc",
   "cluster_name" : "my-application",
@@ -89,7 +89,7 @@ ___  ____ ____ _  _ _   _
   },
   "tagline" : "You Know, for Search"
 }
-➜curl  -XGET -H'UPSTREAM:backup'  http://localhost:2900/
+➜ curl  -XGET -H'UPSTREAM:backup'  http://localhost:2900/
 {
   "name" : "zRcp1My",
   "cluster_name" : "elasticsearch",
@@ -103,17 +103,17 @@ ___  ____ ____ _  _ _   _
   },
   "tagline" : "You Know, for Search"
 }
-➜curl  -XPOST http://localhost:2900/myindex/doc/1 -d'{"msg":"hello world!"}'
+➜ curl  -XPOST http://localhost:2900/myindex/doc/1 -d'{"msg":"hello world!"}'
 { "acknowledge": true }
-➜curl  -XGET http://localhost:2900/myindex/doc/1
+➜ curl  -XGET http://localhost:2900/myindex/doc/1
 {"_index":"myindex","_type":"doc","_id":"1","_version":1,"found":true,"_source":{"msg":"hello world!"}}
-➜curl  -XPUT http://localhost:2900/myindex/doc/1 -d'{"msg":"i am a proxy!"}'
+➜ curl  -XPUT http://localhost:2900/myindex/doc/1 -d'{"msg":"i am a proxy!"}'
 { "acknowledge": true }
-➜curl  -XGET http://localhost:2900/myindex/doc/1
+➜ curl  -XGET http://localhost:2900/myindex/doc/1
 {"_index":"myindex","_type":"doc","_id":"1","_version":2,"found":true,"_source":{"msg":"i am a proxy!"}}
-➜curl  -XDELETE http://localhost:2900/myindex/doc/1
+➜ curl  -XDELETE http://localhost:2900/myindex/doc/1
 { "acknowledge": true }
-➜curl  -XGET http://localhost:2900/myindex/doc/1
+➜ curl  -XGET http://localhost:2900/myindex/doc/1
 {"_index":"myindex","_type":"doc","_id":"1","found":false}
 ```
 
@@ -125,7 +125,7 @@ Have fun!
   1. `UPSTREAM`, manually choose which upstream are going to query against(read/search requests)
 
     ```
-    ➜curl -v -XGET -H'UPSTREAM:primary'  http://localhost:2900/index/doc/1
+    ➜ curl -v -XGET -H'UPSTREAM:primary'  http://localhost:2900/index/doc/1
     Note: Unnecessary use of -X or --request, GET is already inferred.
     *   Trying 127.0.0.1...
     * TCP_NODELAY set
@@ -145,7 +145,27 @@ Have fun!
     * Connection #0 to host localhost left intact
     {"_index":"index","_type":"doc","_id":"1","_version":5,"found":true,"_source":{"a":6}}%
     ```
-
+- Enable basic auth
+    1. set up `proxy.yml`
+    ```
+    plugins:
+    - name: proxy
+      enabled: true
+      algorithm: duplicate
+      disk_queue: true
+      basic_auth:
+        enabled: true
+        user:
+          username: "user"
+          password: "password"
+    ```
+    2. done
+    ```
+    ➜ curl  -XGET http://localhost:2900/index
+    {"error":"Unauthorized"}%
+    ➜ curl  --user user:password -XGET http://localhost:2900/index
+    {"index":{"aliases":{},"mappings":{"doc":{"properties":{"a":{"type":"long"}}}},"settings":{"index":{"creation_date":"1523090351368","number_of_shards":"5","number_of_replicas":"1","uuid":"QWA-T-_4RV-ZaucxJ9z-lQ","version":{"created":"6020399"},"provided_name":"index"}}}}%
+    ```
 
 License
 =======

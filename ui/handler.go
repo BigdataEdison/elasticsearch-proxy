@@ -18,9 +18,9 @@ package ui
 
 import (
 	"github.com/infinitbyte/framework/core/api"
+	"github.com/infinitbyte/framework/core/api/router"
 	"github.com/infinitbyte/framework/core/util"
 	"net/http"
-	"github.com/infinitbyte/framework/core/api/router"
 )
 
 type UI struct {

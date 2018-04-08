@@ -46,7 +46,8 @@ func (module ProxyPlugin) Start(cfg *Config) {
 	if proxyConfig.UIEnabled {
 		ui.InitUI()
 	}
-	api.InitAPI()
+
+	api.InitAPI(proxyConfig.BasicAuthConfig)
 
 	//register pipeline joints
 	pipeline.RegisterPipeJoint(pipelines.IndexJoint{})

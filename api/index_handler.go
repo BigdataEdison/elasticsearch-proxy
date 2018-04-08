@@ -28,8 +28,8 @@ import (
 	"github.com/infinitbyte/framework/core/util"
 	"github.com/medcl/elasticsearch-proxy/config"
 	"net/http"
-	"time"
 	"strings"
+	"time"
 )
 
 // IndexAction returns cluster health information

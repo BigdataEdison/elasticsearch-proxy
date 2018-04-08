@@ -39,9 +39,20 @@ func (v *UpstreamConfig) SafeGetQueueName() string {
 }
 
 type ProxyConfig struct {
-	UIEnabled bool
-	Upstream  []UpstreamConfig `config:"upstream"`
-	Algorithm string
+	UIEnabled       bool
+	Upstream        []UpstreamConfig `config:"upstream"`
+	Algorithm       string
+	BasicAuthConfig BasicAuthConfig `config:"basic_auth"`
+}
+
+type BasicAuthConfig struct {
+	User    User `config:"user"`
+	Enabled bool `config:"enabled"`
+}
+
+type User struct {
+	Username string `config:"username"`
+	Password string `config:"password"`
 }
 
 const Url pipeline.ParaKey = "url"

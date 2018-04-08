@@ -18,17 +18,21 @@ package api
 
 import (
 	"github.com/infinitbyte/framework/core/api"
+	"github.com/infinitbyte/framework/core/util"
+	"github.com/medcl/elasticsearch-proxy/config"
+	"net/http"
 )
 
 // API namespace
 type API struct {
 	api.Handler
+	authConfig config.BasicAuthConfig
 }
 
 // InitAPI init apis
-func InitAPI() {
+func InitAPI(authConfig config.BasicAuthConfig) {
 
-	apis := API{}
+	apis := API{authConfig: authConfig}
 
 	//Index
 	api.HandleAPIMethod(api.GET, "/", apis.IndexAction)
@@ -39,6 +43,24 @@ func InitAPI() {
 	api.HandleAPIMethod(api.GET, "/_proxy/queue/stats", apis.QueueStatsAction)
 
 	// Handle proxy
-	api.HandleAPIFunc("/", apis.ProxyAction)
+	api.HandleAPIFunc("/", apis.BasicAuth(apis.ProxyAction))
+}
 
+func (api *API) BasicAuth(handler func(w http.ResponseWriter, r *http.Request)) func(w http.ResponseWriter, req *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Get the Basic Authentication credentials
+		user, password, hasAuth := r.BasicAuth()
+
+		if (!api.authConfig.Enabled) || (hasAuth && user == api.authConfig.User.Username && password == api.authConfig.User.Password) {
+			// Delegate request to the given handle
+			handler(w, r)
+		} else {
+			// Request Basic Authentication otherwise
+			w.Header().Set("WWW-Authenticate", "Basic realm=Restricted")
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write(util.ToJSONBytes(util.MapStr{
+				"error": http.StatusText(http.StatusUnauthorized),
+			}))
+		}
+	}
 }
